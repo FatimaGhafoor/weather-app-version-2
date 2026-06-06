@@ -30,3 +30,4 @@ export function displayWeather(resultDiv, data, createWeatherTable) {
   resultDiv.appendChild(table);
 }
 
+
