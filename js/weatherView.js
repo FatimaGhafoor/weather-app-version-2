@@ -1,4 +1,4 @@
-export function validateDOM() {
+export function getDOMElements() {
   const cityInput = document.getElementById("cityInput");
   const searchBtn = document.getElementById("searchBtn");
   const resultDiv = document.getElementById("result");
@@ -29,5 +29,3 @@ export function displayWeather(resultDiv, data, createWeatherTable) {
   resultDiv.innerHTML = "";
   resultDiv.appendChild(table);
 }
-
-
