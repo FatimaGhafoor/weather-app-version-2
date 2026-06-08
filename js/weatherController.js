@@ -1,7 +1,21 @@
-export function createWeatherController({ elements, services, view, config }) {
+import { getCache, setCache } from "./cacheService.js";
+
+export function createWeatherController({
+  elements,
+  services,
+  view,
+  config,
+  messages,
+}) {
   const { cityInput, searchBtn, resultDiv } = elements;
-  const { fetchWeather, cache } = services;
-  const { showMessage, showLoading, displayWeather } = view;
+
+  const { fetchWeather } = services;
+
+  const {
+    showMessage,
+    showLoading,
+    displayWeather,
+  } = view;
 
   function setupEventListeners() {
     searchBtn.addEventListener("click", handleSearch);
@@ -14,51 +28,45 @@ export function createWeatherController({ elements, services, view, config }) {
     });
   }
 
-  function setupNetworkListeners() {
-    window.addEventListener("offline", () => {
-      showMessage("No internet connection", "error");
-    });
-
-    window.addEventListener("online", () => {
-      showMessage("Back Online", "success");
-    });
-  }
-
   async function handleSearch() {
     if (!navigator.onLine) {
-      showMessage("No internet connection", "error");
+      showMessage(resultDiv, messages.NO_CONNECTION, "error");
       return;
     }
 
     const cityName = cityInput.value.trim();
 
     if (!cityName || cityName.length > 100) {
-      showMessage("Enter a valid city name", "warning");
+      showMessage(resultDiv, "Enter valid city", "warning");
       return;
     }
 
-    const cached = cache.get(cityName);
-    const now = Date.now();
+    const cachedData = getCache(
+      cityName,
+      config.CACHE_DURATION
+    );
 
-    if (cached && now - cached.timestamp < config.CACHE_DURATION) {
-      displayWeather(cached.data);
+    if (cachedData) {
+      displayWeather(resultDiv, cachedData);
       return;
     }
 
-    showLoading();
+    showLoading(resultDiv);
 
     try {
       const data = await fetchWeather(cityName);
-      cache.set(cityName, data);
-      displayWeather(data);
+
+      setCache(cityName, data);
+
+      displayWeather(resultDiv, data);
+
       cityInput.value = "";
     } catch (error) {
-      showMessage(error.message, "error");
+      showMessage(resultDiv, error.message, "error");
     }
   }
 
   return {
     setupEventListeners,
-    setupNetworkListeners,
   };
 }
