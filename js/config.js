@@ -1,5 +1,5 @@
 // API
-const MINUTES = 60*1000;
+const MINUTES = 60 * 1000;
 
 export const API_CONFIG = Object.freeze({
   BASE_URL: "https://api.openweathermap.org/data/2.5/weather",
@@ -7,17 +7,18 @@ export const API_CONFIG = Object.freeze({
   UNIT: "metric",
 });
 
+// Cache
 export const CACHE_CONFIG = Object.freeze({
-  DURATION: 5*MINUTES,
+  DURATION: 5 * MINUTES,
 });
 
-// Cache
+// UI
 export const UI_CONFIG = Object.freeze({
   SEARCH_DEBOUNCE: 300,
   MAX_CITY_LENGTH: 100,
-})
+});
 
-// UI
+// Error Messages
 export const ErrorMessages = Object.freeze({
   EMPTY_INPUT: "Please enter a city",
   INVALID_INPUT: "City name must be 1-100 characters",
@@ -27,4 +28,3 @@ export const ErrorMessages = Object.freeze({
   SERVER_ERROR: "Server error. Please try again later.",
   UNKNOWN_ERROR: "An unexpected error occurred",
 });
-
