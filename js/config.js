@@ -10,6 +10,7 @@ export const API_CONFIG = Object.freeze({
 // Cache
 export const CACHE_CONFIG = Object.freeze({
   DURATION: 5 * MINUTES,
+  MAX_SIZE: 50,
 });
 
 // UI
