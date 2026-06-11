@@ -1,10 +1,11 @@
+const WEATHER_ICONS = Object.freeze({
+  Rain: "🌧️",
+  Clouds: "☁️",
+  Clear: "☀️",
+  Snow: "❄️",
+  Thunderstorm: "⛈️",
+});
+
 export function getWeatherIcon(condition) {
-  const icons = {
-    Rain: "🌧️",
-    Clouds: "☁️",
-    Clear: "☀️",
-    Snow: "❄️",
-    Thunderstorm: "⛈️",
-  };
-  return icons[condition] || "🌡️";
+  return WEATHER_ICONS[condition] || "🌡️";
 }
