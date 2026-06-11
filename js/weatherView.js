@@ -1,31 +1,51 @@
-export function getDOMElements() {
-  const cityInput = document.getElementById("cityInput");
-  const searchBtn = document.getElementById("searchBtn");
-  const resultDiv = document.getElementById("result");
+import { WeatherTable } from "./weatherTable.js";
 
-  if (!cityInput || !searchBtn || !resultDiv) {
-    throw new Error("Required DOM element is missing");
+export class WeatherView {
+  #cityInput;
+  #searchBtn;
+  #resultDiv;
+  #weatherTable;
+
+  constructor() {
+    this.#validateDOM();
+    this.#weatherTable = new WeatherTable();
   }
 
-  return { cityInput, searchBtn, resultDiv };
-}
+  //  Public
+  showLoading() {
+    this.#resultDiv.innerHTML = "<p>Loading...</p>";
+  }
 
-export function showLoading(resultDiv) {
-  resultDiv.innerHTML = "<p>Loading...</p>";
-}
+  showMessage(message, type = "info") {
+    this.#resultDiv.innerHTML = `<p class="message message--${type}">${message}</p>`;
+  }
 
-export function showMessage(resultDiv, message, type = "info") {
-  const colors = {
-    error: "red",
-    warning: "orange",
-    success: "green",
-    info: "blue",
-  };
-  resultDiv.innerHTML = `<p style="color: ${colors[type]};">${message}</p>`;
-}
+  displayWeather(data) {
+    const table = this.#weatherTable.create([data]);
+    this.#resultDiv.innerHTML = "";
+    this.#resultDiv.appendChild(table);
+  }
 
-export function displayWeather(resultDiv, data, createWeatherTable) {
-  const table = createWeatherTable([data]);
-  resultDiv.innerHTML = "";
-  resultDiv.appendChild(table);
+  clear() {
+    this.#resultDiv.innerHTML = "";
+  }
+
+  getCityInput() {
+    return this.#cityInput.value.trim();
+  }
+
+  clearCityInput() {
+    this.#cityInput.value = "";
+  }
+
+  // Private 
+  #validateDOM() {
+    this.#cityInput = document.getElementById("cityInput");
+    this.#searchBtn = document.getElementById("searchBtn");
+    this.#resultDiv = document.getElementById("result");
+
+    if (!this.#cityInput || !this.#searchBtn || !this.#resultDiv) {
+      throw new Error("Required DOM element is missing");
+    }
+  }
 }
