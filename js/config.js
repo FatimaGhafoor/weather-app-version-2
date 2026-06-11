@@ -3,7 +3,7 @@ const MINUTES = 60 * 1000;
 
 export const API_CONFIG = Object.freeze({
   BASE_URL: "https://api.openweathermap.org/data/2.5/weather",
-  KEY: import.meta.env.VITE_API_KEY,
+  KEY: "f00c38e0279b7bc85480c3fe775d518c",
   UNIT: "metric",
 });
 
