@@ -1,72 +1,79 @@
-import { getCache, setCache } from "./cacheService.js";
+import { WeatherService } from "./weatherService.js";
+import { CacheService } from "./cacheService.js";
+import { WeatherView } from "./weatherView.js";
+import { ErrorMessages, UI_CONFIG } from "./config.js";
 
-export function createWeatherController({
-  elements,
-  services,
-  view,
-  config,
-  messages,
-}) {
-  const { cityInput, searchBtn, resultDiv } = elements;
+export class WeatherController {
+  #view;
+  #weatherService;
+  #cacheService;
 
-  const { fetchWeather } = services;
+  constructor() {
+    this.#view = new WeatherView();
+    this.#weatherService = new WeatherService();
+    this.#cacheService = new CacheService();
+  }
 
-  const {
-    showMessage,
-    showLoading,
-    displayWeather,
-  } = view;
+  init() {
+    this.#setupEventListeners();
+    this.#setupNetworkListeners();
+  }
 
-  function setupEventListeners() {
-    searchBtn.addEventListener("click", handleSearch);
+  // ─── Private ─────────────────────────────────────
+  #setupEventListeners() {
+    document
+      .getElementById("searchBtn")
+      .addEventListener("click", () => this.#handleSearch());
 
-    cityInput.addEventListener("keydown", (e) => {
+    document.getElementById("cityInput").addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        handleSearch();
+        this.#handleSearch();
       }
     });
   }
 
-  async function handleSearch() {
+  #setupNetworkListeners() {
+    window.addEventListener("offline", () => {
+      this.#view.showMessage(ErrorMessages.NO_CONNECTION, "error");
+    });
+    window.addEventListener("online", () => {
+      this.#view.showMessage("Back online", "success");
+    });
+  }
+
+  async #handleSearch() {
     if (!navigator.onLine) {
-      showMessage(resultDiv, messages.NO_CONNECTION, "error");
+      this.#view.showMessage(ErrorMessages.NO_CONNECTION, "error");
       return;
     }
 
-    const cityName = cityInput.value.trim();
+    const cityName = this.#view.getCityInput();
 
-    if (!cityName || cityName.length > 100) {
-      showMessage(resultDiv, "Enter valid city", "warning");
+    if (!this.#isValidCity(cityName)) {
+      this.#view.showMessage(ErrorMessages.INVALID_INPUT, "warning");
       return;
     }
 
-    const cachedData = getCache(
-      cityName,
-      config.CACHE_DURATION
-    );
-
-    if (cachedData) {
-      displayWeather(resultDiv, cachedData);
+    const cached = this.#cacheService.get(cityName);
+    if (cached) {
+      this.#view.displayWeather(cached);
       return;
     }
 
-    showLoading(resultDiv);
+    this.#view.showLoading();
 
     try {
-      const data = await fetchWeather(cityName);
-
-      setCache(cityName, data);
-
-      displayWeather(resultDiv, data);
-
-      cityInput.value = "";
+      const data = await this.#weatherService.fetchWeather(cityName);
+      this.#cacheService.set(cityName, data);
+      this.#view.displayWeather(data);
+      this.#view.clearCityInput();
     } catch (error) {
-      showMessage(resultDiv, error.message, "error");
+      this.#view.showMessage(error.message, "error");
     }
   }
 
-  return {
-    setupEventListeners,
-  };
+  #isValidCity(cityName) {
+    return cityName.length > 0 && cityName.length <= UI_CONFIG.MAX_CITY_LENGTH;
+  }
 }
