@@ -1,25 +1,38 @@
-  import {CONFIG} from "./config.js";
-  import { handleResponseError } from "./errorHandler.js";
+import { API_CONFIG } from "./config.js";
+import { handleResponseError } from "./errorHandler.js";
 
-  let currentRequest = null;
+export class WeatherService {
+  #currentRequest = null;
 
-  export async function fetchWeather(cityName) {
-    if (currentRequest) {
-      currentRequest.abort();
-    }
+  async fetchWeather(cityName) {
+    this.#abortPending();
 
     const controller = new AbortController();
-    currentRequest = controller;
+    this.#currentRequest = controller;
 
-    const response = await fetch(
-      `${CONFIG.API_URL}?q=${cityName}&appid=${CONFIG.API_KEY}&units=${CONFIG.UNIT}`,
-      { signal: controller.signal },
-    );
+    try {
+      const response = await fetch(this.#buildURL(cityName), {
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      throw handleResponseError(response);
+      if (!response.ok) {
+        throw handleResponseError(response);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error; 
     }
-    return await response.json();
-  };
+  }
 
-  
+  //  Private 
+  #abortPending() {
+    if (this.#currentRequest) {
+      this.#currentRequest.abort();
+    }
+  }
+
+  #buildURL(cityName) {
+    return `${API_CONFIG.BASE_URL}?q=${cityName}&appid=${API_CONFIG.KEY}&units=${API_CONFIG.UNIT}`;
+  }
+}
