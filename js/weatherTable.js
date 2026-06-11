@@ -1,33 +1,48 @@
 import { getWeatherIcon } from "./utils.js";
 
-export function createWeatherTable(data) {
-  const table = document.createElement("table");
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>City Name</th>
-        <th>Temperature</th>
-        <th>Humidity</th>
-        <th>Condition</th>
-        <th>Weather Icon</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
+export class WeatherTable {
+  create(data) {
+    const table = this.#createTable();
+    const tbody = table.querySelector("tbody");
 
-  const tbody = table.querySelector("tbody");
+    data.forEach((city) => {
+      tbody.appendChild(this.#createRow(city));
+    });
 
-  data.forEach((city) => {
+    return table;
+  }
+
+  // Private
+  #createTable() {
+    const table = document.createElement("table");
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>City Name</th>
+          <th>Temperature</th>
+          <th>Humidity</th>
+          <th>Condition</th>
+          <th>Weather Icon</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+    return table;
+  }
+
+  #createRow(city) {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${city.name}</td>
-      <td>${city.main.temp}</td>
-      <td>${city.main.humidity}</td>
-      <td>${city.weather[0].main}</td>
-      <td>${getWeatherIcon(city.weather[0].main)}</td>
+      <td>${this.#extract(city.name)}</td>
+      <td>${this.#extract(city.main?.temp)}°C</td>
+      <td>${this.#extract(city.main?.humidity)}%</td>
+      <td>${this.#extract(city.weather?.[0]?.main)}</td>
+      <td>${getWeatherIcon(city.weather?.[0]?.main)}</td>
     `;
-    tbody.appendChild(row);
-  });
+    return row;
+  }
 
-  return table;
+  #extract(value) {
+    return value !== undefined && value !== null ? value : "N/A";
+  }
 }
