@@ -140,7 +140,7 @@ weather-app/
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/your-username/weather-app.git
+   git clone https://github.com/FatimaGhafoor/weather-app-version-2
    ```
 
 2. Add your API key in `config.js`
