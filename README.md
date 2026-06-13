@@ -21,6 +21,7 @@ Every file owns exactly one responsibility. Nothing more.
 
 ```
 config.js               → Constants, API config, error messages
+utils.js                → pure helper function
 cacheService.js         → Cache reads, writes, expiry, size limit
 errorHandler.js         → HTTP error mapping, runtime error handling
 weatherService.js       → API fetch, AbortController, URL building
@@ -34,6 +35,7 @@ app.js                  → Entry point only — boots the controller
 
 ```
 config.js
+utils.js
    ├── cacheService.js
    ├── errorHandler.js
    └── weatherService.js
@@ -120,11 +122,13 @@ Raw API responses are never trusted directly. Optional chaining and fallback val
 
 ```
 weather-app/
+├── README.md
 ├── index.html
 ├── style.css
 └── js/
     ├── app.js
     ├── config.js
+    ├── utils.js
     ├── cacheService.js
     ├── errorHandler.js
     ├── weatherService.js
@@ -132,6 +136,8 @@ weather-app/
     ├── weatherView.js
     └── weatherController.js
 ```
+
+````
 
 ---
 
@@ -141,7 +147,7 @@ weather-app/
 
    ```bash
    git clone https://github.com/FatimaGhafoor/weather-app-version-2
-   ```
+````
 
 2. Add your API key in `config.js`
 
